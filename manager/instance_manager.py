@@ -286,6 +286,7 @@ def _generate_asterisk_configs(instance_id: int, req, sip_port: int,
         ('asterisk.conf.j2', 'asterisk.conf'),
         ('pjsip.conf.j2',    'pjsip.conf'),
         ('manager.conf.j2',  'manager.conf'),
+        ('logger.conf.j2',   'logger.conf'),
     ]:
         content = _jinja.get_template(tpl).render(**ctx)
         with open(os.path.join(asterisk_dir, out), 'w') as f:
@@ -293,6 +294,12 @@ def _generate_asterisk_configs(instance_id: int, req, sip_port: int,
 
     ext_src = os.path.join(settings.SOURCE_DIR, 'asterisk', 'extensions_loyalcorp.conf')
     shutil.copy2(ext_src, os.path.join(asterisk_dir, 'extensions.conf'))
+
+    for static in ['amd.conf', 'modules.conf']:
+        src = os.path.join('/etc/asterisk', static)
+        dst = os.path.join(asterisk_dir, static)
+        if os.path.exists(src) and not os.path.exists(dst):
+            shutil.copy2(src, dst)
 
 
 def _generate_systemd_units(instance_id: int, name: str, inst_dir: str):
