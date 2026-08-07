@@ -1,4 +1,6 @@
 {
+  "instance_id": 1,
+
   "telegram_bot_token": "YOUR_BOT_TOKEN",
   "admin_telegram_ids": [123456789],
 
@@ -15,7 +17,8 @@
     "port": 5432,
     "database": "loyalcorp_p1",
     "user": "loyalcorp",
-    "password": "YOUR_DB_PASSWORD"
+    "password": "YOUR_DB_PASSWORD",
+    "schema": "bot_1"
   },
 
   "ami": {
@@ -25,11 +28,19 @@
     "secret": "YOUR_AMI_SECRET"
   },
 
-  "pjsip_conf_path": "/etc/asterisk/pjsip_loyalcorp.conf",
+  "sip_host": "YOUR_MAGNUS_IP",
+  "sip_user": "YOUR_SIP_USERNAME",
+  "sip_pass": "YOUR_SIP_PASSWORD",
+  "sip_port": 5060,
+
+  "pjsip_conf_path": "/opt/loyalcorp-instances/1/asterisk/pjsip.conf",
   "pjsip_endpoint": "loyalcorp_trunk",
   "ivr_context": "loyalcorp-p1-ivr",
   "default_caller_id": "12025551234",
-  "asterisk_sounds_dir": "/var/lib/asterisk/sounds/custom",
+
+  "asterisk_config_dir": "/opt/loyalcorp-instances/1/asterisk",
+  "asterisk_data_dir": "/opt/loyalcorp-instances/1/asterisk-data",
+  "asterisk_sounds_dir": "/opt/loyalcorp-instances/1/asterisk-data/sounds",
 
   "max_concurrent_calls": 10,
   "call_timeout_seconds": 30,
@@ -50,5 +61,5 @@
   "company_name": "LoyalCorp P1",
   "support_username": "@loyalcorpsupport",
 
-  "upload_dir": "/opt/loyalcorp/bot/uploads"
+  "upload_dir": "/opt/loyalcorp-instances/1/uploads"
 }
