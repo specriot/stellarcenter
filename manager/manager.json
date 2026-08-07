@@ -1,0 +1,23 @@
+{
+  "server_ip":    "85.11.167.108",
+  "magnus_ip":    "91.92.40.131",
+
+  "db_host":      "localhost",
+  "db_port":      5432,
+  "db_name":      "loyalcorp_p1",
+  "db_user":      "loyalcorp",
+  "db_pass":      "loyalcorp2026",
+
+  "ami_username": "loyalcorp_bot",
+  "ami_secret":   "LoyalCorpAMI2026",
+
+  "oxapay_api_key": "NXQPG2-WFK92R-QGDIWX-DTAA9Y",
+  "oxapay_api_url": "https://api.oxapay.com/v1/payment/invoice",
+
+  "instances_dir":       "/opt/loyalcorp-instances",
+  "source_dir":          "/opt/loyalcorp",
+  "default_sounds_src":  "/var/lib/asterisk/sounds/custom",
+  "asterisk_sounds_dir": "/var/lib/asterisk/sounds",
+
+  "api_key": "ORnn9SC3QX79uAr"
+}
