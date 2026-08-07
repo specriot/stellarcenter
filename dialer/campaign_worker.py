@@ -159,18 +159,21 @@ class CampaignWorker:
             await self.db_pool.close()
 
     async def _loop(self):
+        _idle_ticks = 0
         while self.running:
             try:
                 campaigns = await self._get_running_campaigns()
                 if campaigns:
-                    # Fire all campaigns in parallel — no awaiting each other
+                    _idle_ticks = 0
                     tasks = [
                         asyncio.create_task(self._process(c))
                         for c in campaigns
                     ]
                     await asyncio.gather(*tasks, return_exceptions=True)
                 else:
-                    logger.info("💤 No running campaigns")
+                    _idle_ticks += 1
+                    if _idle_ticks % 60 == 1:
+                        logger.info("💤 No running campaigns")
                 await asyncio.sleep(1)
             except Exception as e:
                 logger.error(f"Loop error: {e}", exc_info=True)
@@ -214,13 +217,12 @@ class CampaignWorker:
         if not numbers:
             if active_dialing > 0:
                 return
-            # Only complete if we actually dialed at least some numbers
             total = campaign.get('total_numbers', 0)
-            done  = campaign.get('completed', 0)
-            if total > 0 and done > 0:
-                await self._complete(campaign_id, campaign)
-            elif total == 0:
+            if total == 0:
                 await self._pause(campaign_id, "No numbers in campaign")
+                return
+            # No pending, no active — all numbers are in terminal state (failed/answered/completed)
+            await self._complete(campaign_id, campaign)
             return
 
         logger.info(f"📞 Campaign {campaign_id}: dialing {len(numbers)} numbers (fire-and-forget)")

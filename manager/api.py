@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, Query
 from pydantic import BaseModel
 from typing import Optional, List
+import os
 
 import db
 import instance_manager
@@ -120,6 +121,28 @@ def pause_instance(instance_id: int, _=Depends(_check_key)):
         return {"status": "paused"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/instances/{instance_id}/logs/{service}")
+def get_logs(instance_id: int, service: str, lines: int = Query(default=100, le=2000), _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    if service not in ('bot', 'worker', 'asterisk'):
+        raise HTTPException(status_code=400, detail="service must be bot, worker, or asterisk")
+    inst_dir = inst['instance_dir']
+    paths = {
+        'bot':      os.path.join(inst_dir, 'logs', 'bot.log'),
+        'worker':   os.path.join(inst_dir, 'logs', 'worker.log'),
+        'asterisk': os.path.join(inst_dir, 'logs', 'messages'),
+    }
+    path = paths[service]
+    if not os.path.exists(path):
+        return {"instance_id": instance_id, "service": service, "lines": []}
+    with open(path) as f:
+        all_lines = f.readlines()
+    tail = [l.rstrip('\n') for l in all_lines[-lines:]]
+    return {"instance_id": instance_id, "service": service, "lines": tail}
 
 
 @app.post("/api/instances/{instance_id}/resume")

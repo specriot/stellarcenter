@@ -1,0 +1,16 @@
+[Unit]
+Description=LoyalCorp Instance Manager API
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/loyalcorp-manager
+ExecStart=/opt/loyalcorp-manager/venv/bin/uvicorn api:app --host 0.0.0.0 --port 9000
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/loyalcorp-manager.log
+StandardError=append:/var/log/loyalcorp-manager.log
+
+[Install]
+WantedBy=multi-user.target
