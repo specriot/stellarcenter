@@ -15,7 +15,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'bot'))
 
 from config import (
-    DATABASE_URL, AMI_CONFIG, IVR_CONTEXT,
+    DATABASE_URL, DATABASE_CONFIG, AMI_CONFIG, IVR_CONTEXT,
     PJSIP_ENDPOINT, MAX_CONCURRENT_CALLS,
     CALL_TIMEOUT_SECONDS, DELAY_BETWEEN_CALLS,
     COUNTRY_CODE, TELEGRAM_BOT_TOKEN, WEBHOOK_PORT
@@ -136,7 +136,11 @@ class CampaignWorker:
 
     async def start(self):
         logger.info("🚀 LoyalCorp Campaign Worker starting...")
-        self.db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=5, max_size=20)
+        schema = DATABASE_CONFIG.get('schema', 'public')
+        self.db_pool = await asyncpg.create_pool(
+            DATABASE_URL, min_size=5, max_size=20,
+            server_settings={'search_path': schema}
+        )
         logger.info("✅ DB connected")
 
         connected = await self.ami.connect()
