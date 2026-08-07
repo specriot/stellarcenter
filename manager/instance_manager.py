@@ -3,13 +3,16 @@ import os
 import shutil
 import asyncpg
 from pathlib import Path
+from jinja2 import Environment, FileSystemLoader
 
 import db
 import settings
 
-# Standard Asterisk sound subdirs that every instance needs.
-# Symlinked (not copied) to save disk space.
+# Standard Asterisk sound subdirs every instance needs — symlinked, not copied.
 _ASTERISK_STD_SOUND_DIRS = ['en', 'digits', 'letters', 'phonetic', 'silence']
+
+_TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+_jinja = Environment(loader=FileSystemLoader(_TEMPLATE_DIR), keep_trailing_newline=True)
 
 
 async def create_instance(req) -> dict:
@@ -43,6 +46,7 @@ async def create_instance(req) -> dict:
 
     _create_dirs(inst_dir)
     _write_config(instance_id, req, sip_port, ami_port, webhook_port, schema, inst_dir)
+    _generate_asterisk_configs(instance_id, req, sip_port, ami_port, inst_dir)
     await _create_pg_schema(schema)
 
     db.update_status(instance_id, 'created')
@@ -61,7 +65,7 @@ def list_instances() -> list:
 
 
 def _create_dirs(inst_dir: str):
-    for sub in ['asterisk', 'asterisk-data/sounds', 'logs', 'uploads']:
+    for sub in ['asterisk', 'asterisk-data/sounds', 'asterisk-data/spool', 'logs', 'uploads', 'run']:
         Path(os.path.join(inst_dir, sub)).mkdir(parents=True, exist_ok=True)
 
     sounds_dst = os.path.join(inst_dir, 'asterisk-data', 'sounds')
@@ -152,6 +156,37 @@ def _write_config(instance_id: int, req, sip_port: int, ami_port: int,
 
     with open(os.path.join(inst_dir, 'config.json'), 'w') as f:
         json.dump(config, f, indent=2)
+
+
+def _generate_asterisk_configs(instance_id: int, req, sip_port: int,
+                               ami_port: int, inst_dir: str):
+    ctx = {
+        'instance_id': instance_id,
+        'inst_dir':    inst_dir,
+        'sip_port':    sip_port,
+        'sip_user':    req.sip_user,
+        'sip_pass':    req.sip_pass,
+        'magnus_ip':   settings.MAGNUS_IP,
+        'ami_port':    ami_port,
+        'ami_username': settings.AMI_USERNAME,
+        'ami_secret':  settings.AMI_SECRET,
+    }
+
+    asterisk_dir = os.path.join(inst_dir, 'asterisk')
+
+    # Render templates
+    for tpl, out in [
+        ('asterisk.conf.j2', 'asterisk.conf'),
+        ('pjsip.conf.j2',    'pjsip.conf'),
+        ('manager.conf.j2',  'manager.conf'),
+    ]:
+        content = _jinja.get_template(tpl).render(**ctx)
+        with open(os.path.join(asterisk_dir, out), 'w') as f:
+            f.write(content)
+
+    # extensions.conf — static copy, no templating needed
+    ext_src = os.path.join(settings.SOURCE_DIR, 'asterisk', 'extensions_loyalcorp.conf')
+    shutil.copy2(ext_src, os.path.join(asterisk_dir, 'extensions.conf'))
 
 
 async def _create_pg_schema(schema: str):
