@@ -10,10 +10,10 @@ import subprocess
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
+from config import PJSIP_CONF_PATH
 
 logger = logging.getLogger(__name__)
 
-PJSIP_CONF_PATH     = "/etc/asterisk/pjsip_loyalcorp.conf"
 ASTERISK_RELOAD_CMD = 'asterisk -rx "pjsip reload"'
 
 

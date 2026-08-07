@@ -18,7 +18,7 @@ from config import (
     DATABASE_URL, AMI_CONFIG, IVR_CONTEXT,
     PJSIP_ENDPOINT, MAX_CONCURRENT_CALLS,
     CALL_TIMEOUT_SECONDS, DELAY_BETWEEN_CALLS,
-    COUNTRY_CODE, TELEGRAM_BOT_TOKEN
+    COUNTRY_CODE, TELEGRAM_BOT_TOKEN, WEBHOOK_PORT
 )
 
 logging.basicConfig(level=logging.INFO,
@@ -73,7 +73,7 @@ class AsteriskAMI:
             f"CAMPAIGN_DATA_ID={campaign_data_id},"
             f"VOICE_FILE={voice_file},"
             f"OUTRO_FILE={outro_file or ''},"
-            f"WEBHOOK_URL=http://127.0.0.1:8000"
+            f"WEBHOOK_URL=http://127.0.0.1:{WEBHOOK_PORT}"
         )
         cmd = (
             f"Action: Originate\r\n"

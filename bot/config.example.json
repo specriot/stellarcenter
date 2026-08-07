@@ -1,0 +1,54 @@
+{
+  "telegram_bot_token": "YOUR_BOT_TOKEN",
+  "admin_telegram_ids": [123456789],
+
+  "oxapay_api_key": "YOUR_OXAPAY_KEY",
+  "oxapay_api_url": "https://api.oxapay.com/v1/payment/invoice",
+  "oxapay_webhook_url": "http://YOUR_SERVER_IP:8000/webhook/oxapay",
+  "default_currency": "USDT",
+  "min_topup_amount": 10,
+
+  "default_price_per_1k": 5.0,
+
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "loyalcorp_p1",
+    "user": "loyalcorp",
+    "password": "YOUR_DB_PASSWORD"
+  },
+
+  "ami": {
+    "host": "127.0.0.1",
+    "port": 5038,
+    "username": "loyalcorp_bot",
+    "secret": "YOUR_AMI_SECRET"
+  },
+
+  "pjsip_conf_path": "/etc/asterisk/pjsip_loyalcorp.conf",
+  "pjsip_endpoint": "loyalcorp_trunk",
+  "ivr_context": "loyalcorp-p1-ivr",
+  "default_caller_id": "12025551234",
+  "asterisk_sounds_dir": "/var/lib/asterisk/sounds/custom",
+
+  "max_concurrent_calls": 10,
+  "call_timeout_seconds": 30,
+  "delay_between_calls": 1,
+  "country_code": "1",
+
+  "webhook_host": "0.0.0.0",
+  "webhook_port": 8000,
+  "webhook_url": "http://YOUR_SERVER_IP:8000",
+
+  "cost_per_minute": 1.0,
+  "minimum_billable_seconds": 6,
+  "billing_increment_seconds": 6,
+
+  "log_level": "INFO",
+  "log_file": "loyalcorp.log",
+
+  "company_name": "LoyalCorp P1",
+  "support_username": "@loyalcorpsupport",
+
+  "upload_dir": "/opt/loyalcorp/bot/uploads"
+}
