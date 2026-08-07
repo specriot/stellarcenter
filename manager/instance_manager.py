@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import subprocess
+import uuid
 import asyncpg
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -50,7 +51,7 @@ async def create_instance(req) -> dict:
         'sip_port':         sip_port,
         'ami_port':         ami_port,
         'webhook_port':     webhook_port,
-        'db_schema':        f'bot_{sip_port - 5059}',
+        'db_schema':        f'tmp_{uuid.uuid4().hex}',
         'company_name':     req.company_name or 'LoyalCorp P1',
         'support_username': req.support_username or '@loyalcorpsupport',
         'admin_ids':        json.dumps(req.admin_ids or []),
