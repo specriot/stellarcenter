@@ -1,5 +1,4 @@
-from fastapi import FastAPI, HTTPException, Security
-from fastapi.security.api_key import APIKeyHeader
+from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
 from typing import Optional, List
 
@@ -11,11 +10,9 @@ db.init()
 
 app = FastAPI(title="LoyalCorp Instance Manager", version="1.0")
 
-_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-
-def _check_key(key: Optional[str] = Security(_api_key_header)):
-    if settings.API_KEY and key != settings.API_KEY:
+def _check_key(x_api_key: Optional[str] = Header(None)):
+    if settings.API_KEY and x_api_key != settings.API_KEY:
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
 
 
@@ -34,8 +31,7 @@ class CreateRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 @app.post("/api/instances", status_code=201)
-async def create_instance(req: CreateRequest):
-    _check_key()
+async def create_instance(req: CreateRequest, _=Depends(_check_key)):
     try:
         return await instance_manager.create_instance(req)
     except ValueError as e:
@@ -45,14 +41,12 @@ async def create_instance(req: CreateRequest):
 
 
 @app.get("/api/instances")
-def list_instances():
-    _check_key()
+def list_instances(_=Depends(_check_key)):
     return instance_manager.list_instances()
 
 
 @app.get("/api/instances/{instance_id}")
-def get_instance(instance_id: int):
-    _check_key()
+def get_instance(instance_id: int, _=Depends(_check_key)):
     try:
         return instance_manager.get_instance(instance_id)
     except ValueError as e:
