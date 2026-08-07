@@ -28,9 +28,11 @@ AMI_SECRET     = _cfg['ami_secret']
 OXAPAY_API_KEY = _cfg['oxapay_api_key']
 OXAPAY_API_URL = _cfg.get('oxapay_api_url', 'https://api.oxapay.com/v1/payment/invoice')
 
-INSTANCES_DIR  = _cfg.get('instances_dir', '/opt/loyalcorp-instances')
-SOURCE_DIR     = _cfg.get('source_dir', '/opt/loyalcorp')
-SCHEMA_SQL     = os.path.join(SOURCE_DIR, 'database', 'schema.sql')
+INSTANCES_DIR      = _cfg.get('instances_dir', '/opt/loyalcorp-instances')
+SOURCE_DIR         = _cfg.get('source_dir', '/opt/loyalcorp')
+SCHEMA_SQL         = os.path.join(SOURCE_DIR, 'database', 'schema.sql')
+DEFAULT_SOUNDS_SRC = _cfg.get('default_sounds_src', '/var/lib/asterisk/sounds/custom')
+ASTERISK_SOUNDS_DIR = _cfg.get('asterisk_sounds_dir', '/var/lib/asterisk/sounds')
 
 API_KEY        = _cfg.get('api_key', '')
 

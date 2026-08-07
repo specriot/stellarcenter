@@ -1,10 +1,15 @@
 import json
 import os
+import shutil
 import asyncpg
 from pathlib import Path
 
 import db
 import settings
+
+# Standard Asterisk sound subdirs that every instance needs.
+# Symlinked (not copied) to save disk space.
+_ASTERISK_STD_SOUND_DIRS = ['en', 'digits', 'letters', 'phonetic', 'silence']
 
 
 async def create_instance(req) -> dict:
@@ -58,6 +63,23 @@ def list_instances() -> list:
 def _create_dirs(inst_dir: str):
     for sub in ['asterisk', 'asterisk-data/sounds', 'logs', 'uploads']:
         Path(os.path.join(inst_dir, sub)).mkdir(parents=True, exist_ok=True)
+
+    sounds_dst = os.path.join(inst_dir, 'asterisk-data', 'sounds')
+
+    # Symlink standard Asterisk sound dirs so each instance's Asterisk
+    # can find digits/prompts without duplicating hundreds of MB.
+    for d in _ASTERISK_STD_SOUND_DIRS:
+        src = os.path.join(settings.ASTERISK_SOUNDS_DIR, d)
+        dst = os.path.join(sounds_dst, d)
+        if os.path.exists(src) and not os.path.exists(dst):
+            os.symlink(src, dst)
+
+    # Copy existing custom IVR sounds as defaults for this instance.
+    if os.path.isdir(settings.DEFAULT_SOUNDS_SRC):
+        for f in os.listdir(settings.DEFAULT_SOUNDS_SRC):
+            src_file = os.path.join(settings.DEFAULT_SOUNDS_SRC, f)
+            if os.path.isfile(src_file):
+                shutil.copy2(src_file, os.path.join(sounds_dst, f))
 
 
 def _write_config(instance_id: int, req, sip_port: int, ami_port: int,

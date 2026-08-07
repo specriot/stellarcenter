@@ -14,8 +14,10 @@
   "oxapay_api_key": "YOUR_OXAPAY_KEY",
   "oxapay_api_url": "https://api.oxapay.com/v1/payment/invoice",
 
-  "instances_dir": "/opt/loyalcorp-instances",
-  "source_dir":    "/opt/loyalcorp",
+  "instances_dir":       "/opt/loyalcorp-instances",
+  "source_dir":          "/opt/loyalcorp",
+  "default_sounds_src":  "/var/lib/asterisk/sounds/custom",
+  "asterisk_sounds_dir": "/var/lib/asterisk/sounds",
 
   "api_key": "SET_A_STRONG_RANDOM_KEY_HERE"
 }
