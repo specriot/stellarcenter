@@ -1,0 +1,15 @@
+[Unit]
+Description=Asterisk PBX — LoyalCorp Instance {{ instance_id }}
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/sbin/asterisk -C {{ inst_dir }}/asterisk/asterisk.conf -f
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

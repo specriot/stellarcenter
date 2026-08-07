@@ -1,0 +1,17 @@
+[Unit]
+Description=LoyalCorp Worker — Instance {{ instance_id }} ({{ name }})
+After=network.target postgresql.service loyalcorp-asterisk-{{ instance_id }}.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/loyalcorp/dialer
+Environment=BOT_CONFIG_PATH={{ inst_dir }}/config.json
+ExecStart=/opt/loyalcorp/venv/bin/python /opt/loyalcorp/dialer/campaign_worker.py
+Restart=always
+RestartSec=5
+StandardOutput=append:{{ inst_dir }}/logs/worker.log
+StandardError=append:{{ inst_dir }}/logs/worker.log
+
+[Install]
+WantedBy=multi-user.target

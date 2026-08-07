@@ -1,0 +1,17 @@
+[Unit]
+Description=LoyalCorp Bot — Instance {{ instance_id }} ({{ name }})
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/loyalcorp/bot
+Environment=BOT_CONFIG_PATH={{ inst_dir }}/config.json
+ExecStart=/opt/loyalcorp/venv/bin/python /opt/loyalcorp/bot/main.py
+Restart=always
+RestartSec=5
+StandardOutput=append:{{ inst_dir }}/logs/bot.log
+StandardError=append:{{ inst_dir }}/logs/bot.log
+
+[Install]
+WantedBy=multi-user.target

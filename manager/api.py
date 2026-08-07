@@ -27,7 +27,7 @@ class CreateRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Instances
+# Instances — CRUD
 # ---------------------------------------------------------------------------
 
 @app.post("/api/instances", status_code=201)
@@ -51,3 +51,65 @@ def get_instance(instance_id: int, _=Depends(_check_key)):
         return instance_manager.get_instance(instance_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.delete("/api/instances/{instance_id}", status_code=204)
+async def delete_instance(instance_id: int, _=Depends(_check_key)):
+    try:
+        await instance_manager.delete_instance(instance_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ---------------------------------------------------------------------------
+# Process control
+# ---------------------------------------------------------------------------
+
+@app.post("/api/instances/{instance_id}/start")
+def start_instance(instance_id: int, _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    try:
+        instance_manager.start_instance(instance_id)
+        return {"status": "running"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/instances/{instance_id}/stop")
+def stop_instance(instance_id: int, _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    try:
+        instance_manager.stop_instance(instance_id)
+        return {"status": "stopped"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/instances/{instance_id}/pause")
+def pause_instance(instance_id: int, _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    try:
+        instance_manager.pause_instance(instance_id)
+        return {"status": "paused"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/instances/{instance_id}/resume")
+def resume_instance(instance_id: int, _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    try:
+        instance_manager.resume_instance(instance_id)
+        return {"status": "running"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
