@@ -137,6 +137,42 @@ def resume_instance(instance_id: int):
     db.update_status(instance_id, 'running')
 
 
+def update_instance(instance_id: int, req) -> dict:
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise ValueError(f"Instance {instance_id} not found")
+
+    sql_fields = {}
+    if req.bot_token is not None:
+        if db.token_exists(req.bot_token) and req.bot_token != inst['bot_token']:
+            raise ValueError("Bot token already registered to another instance")
+        sql_fields['bot_token'] = req.bot_token
+    if req.admin_ids is not None:
+        sql_fields['admin_ids'] = json.dumps(req.admin_ids)
+    if req.name is not None:
+        sql_fields['name'] = req.name
+
+    if sql_fields:
+        db.patch_instance(instance_id, sql_fields)
+
+    # Rewrite config.json with updated values
+    config_path = os.path.join(inst['instance_dir'], 'config.json')
+    with open(config_path) as f:
+        config = json.load(f)
+    if req.bot_token is not None:
+        config['telegram_bot_token'] = req.bot_token
+    if req.admin_ids is not None:
+        config['admin_telegram_ids'] = req.admin_ids
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=2)
+
+    # Restart bot so it picks up the new token/admin list
+    _, svc_bot, _ = _svc_names(instance_id)
+    _systemctl('restart', svc_bot)
+
+    return db.get_instance(instance_id)
+
+
 async def delete_instance(instance_id: int):
     inst = db.get_instance(instance_id)
     if not inst:

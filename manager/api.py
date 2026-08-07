@@ -26,6 +26,12 @@ class CreateRequest(BaseModel):
     admin_ids:        Optional[List[int]] = []
 
 
+class UpdateRequest(BaseModel):
+    bot_token:  Optional[str] = None
+    admin_ids:  Optional[List[int]] = None
+    name:       Optional[str] = None
+
+
 # ---------------------------------------------------------------------------
 # Instances — CRUD
 # ---------------------------------------------------------------------------
@@ -51,6 +57,19 @@ def get_instance(instance_id: int, _=Depends(_check_key)):
         return instance_manager.get_instance(instance_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.patch("/api/instances/{instance_id}")
+def update_instance(instance_id: int, req: UpdateRequest, _=Depends(_check_key)):
+    inst = db.get_instance(instance_id)
+    if not inst:
+        raise HTTPException(status_code=404, detail="Instance not found")
+    try:
+        return instance_manager.update_instance(instance_id, req)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/api/instances/{instance_id}", status_code=204)
