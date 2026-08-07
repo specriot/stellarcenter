@@ -43,6 +43,7 @@ CREATE TABLE leads (
     total_numbers   INTEGER DEFAULT 0,
     available_numbers INTEGER DEFAULT 0,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, list_name)
 );
 
