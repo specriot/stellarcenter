@@ -1,0 +1,15 @@
+[Unit]
+Description=LoyalCorp P1 Campaign Worker
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/loyalcorp/dialer
+ExecStart=/opt/loyalcorp/venv/bin/python campaign_worker.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

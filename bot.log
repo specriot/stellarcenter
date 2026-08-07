@@ -1,0 +1,26 @@
+nohup: ignoring input
+2026-08-02 07:55:43,703 - __main__ - INFO - 🚀 Starting LoyalCorp P1 Bot...
+2026-08-02 07:55:43,872 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8711753348:AAEE200_jh-Lo5ZkpTOYnspizojB94eL8xM/getMe "HTTP/1.1 200 OK"
+2026-08-02 07:55:44,021 - database - INFO - ✅ Database connected
+2026-08-02 07:55:44,057 - database - INFO - 🔴 Database disconnected
+2026-08-02 07:55:44,061 - __main__ - INFO - 🔴 Bot stopped
+Traceback (most recent call last):
+  File "/opt/loyalcorp/bot/main.py", line 1207, in <module>
+    main()
+  File "/opt/loyalcorp/bot/main.py", line 1203, in main
+    app.run_polling(allowed_updates=Update.ALL_TYPES, timeout=0, poll_interval=1.0)
+  File "/opt/loyalcorp/venv/lib/python3.9/site-packages/telegram/ext/_application.py", line 871, in run_polling
+    return self.__run(
+  File "/opt/loyalcorp/venv/lib/python3.9/site-packages/telegram/ext/_application.py", line 1071, in __run
+    loop.run_until_complete(self.post_init(self))
+  File "/usr/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+    return future.result()
+  File "/opt/loyalcorp/bot/main.py", line 1159, in post_init
+    await webhook_srv.start()
+  File "/opt/loyalcorp/bot/webhook_server.py", line 31, in start
+    await site.start()
+  File "/opt/loyalcorp/venv/lib/python3.9/site-packages/aiohttp/web_runner.py", line 119, in start
+    self._server = await loop.create_server(
+  File "/usr/lib/python3.9/asyncio/base_events.py", line 1494, in create_server
+    raise OSError(err.errno, 'error while attempting '
+OSError: [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
