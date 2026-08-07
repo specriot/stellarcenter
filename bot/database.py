@@ -7,7 +7,7 @@ import logging
 from typing import Optional, List, Dict
 from datetime import datetime
 
-from config import DATABASE_URL
+from config import DATABASE_URL, DATABASE_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,11 @@ class Database:
     # =========================================================================
 
     async def connect(self):
-        self.pool = await asyncpg.create_pool(DATABASE_URL, min_size=5, max_size=20)
+        schema = DATABASE_CONFIG.get('schema', 'public')
+        self.pool = await asyncpg.create_pool(
+            DATABASE_URL, min_size=5, max_size=20,
+            server_settings={'search_path': schema}
+        )
         logger.info("✅ Database connected")
 
     async def close(self):

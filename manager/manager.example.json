@@ -1,0 +1,21 @@
+{
+  "server_ip":    "YOUR_SERVER_PUBLIC_IP",
+  "magnus_ip":    "YOUR_MAGNUS_IP",
+
+  "db_host":      "localhost",
+  "db_port":      5432,
+  "db_name":      "loyalcorp_p1",
+  "db_user":      "loyalcorp",
+  "db_pass":      "YOUR_DB_PASSWORD",
+
+  "ami_username": "loyalcorp_bot",
+  "ami_secret":   "YOUR_AMI_SECRET",
+
+  "oxapay_api_key": "YOUR_OXAPAY_KEY",
+  "oxapay_api_url": "https://api.oxapay.com/v1/payment/invoice",
+
+  "instances_dir": "/opt/loyalcorp-instances",
+  "source_dir":    "/opt/loyalcorp",
+
+  "api_key": "SET_A_STRONG_RANDOM_KEY_HERE"
+}
